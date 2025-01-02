@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Catchphrase Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        .timer {
+            font-size: 48px;
+            margin: 20px 0;
+            color: #333;
+        }
+        .word-display {
+            font-size: 32px;
+            margin: 20px 0;
+            min-height: 48px;
+            color: #2c3e50;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .start-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .start-btn:hover {
+            background-color: #27ae60;
+        }
+        .next-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+        .reset-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .reset-btn:hover {
+            background-color: #7f8c8d;
+        }
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .team-scores {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .team-score {
+            text-align: center;
+        }
+        .score-btn {
+            background-color: #9b59b6;
+            color: white;
+            margin: 5px;
+        }
+        .score-btn:hover {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Catchphrase</h1>
+        <div class="team-scores">
+            <div class="team-score">
+                <h2>Team 1</h2>
+                <p id="team1-score">0</p>
+                <button class="score-btn" onclick="addPoint(1)">+1 Point</button>
+            </div>
+            <div class="team-score">
+                <h2>Team 2</h2>
+                <p id="team2-score">0</p>
+                <button class="score-btn" onclick="addPoint(2)">+1 Point</button>
+            </div>
+        </div>
+        <div class="timer" id="timer">1:30</div>
+        <div class="word-display" id="word-display">Press Start to begin!</div>
+        <button class="start-btn" id="start-btn" onclick="startGame()">Start Game</button>
+        <button class="next-btn" id="next-btn" onclick="nextWord()" disabled>Next Word</button>
+        <button class="reset-btn" id="reset-btn" onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <script>
+        // Initialize game state variables first
+        let timer;
+        let timeLeft = 90;
+        let gameActive = false;
+        let currentWord = "";
+
+        // Get DOM elements
+        const team1Score = document.getElementById("team1-score");
+        const team2Score = document.getElementById("team2-score");
+        const timerDisplay = document.getElementById("timer");
+        const wordDisplay = document.getElementById("word-display");
+        const startBtn = document.getElementById("start-btn");
+        const nextBtn = document.getElementById("next-btn");
+
+        // Combined word and phrase list
+        const wordList = [
+            // Common words
+            "dog", "cat", "house", "car", "tree", "book", "phone", "computer",
+            "chair", "table", "door", "window", "sun", "moon", "star", "cloud",
+            "rain", "snow", "flower", "grass", "bird", "fish", "movie", "music",
+            "dance", "sing", "jump", "run", "walk", "sleep", "eat", "drink",
+            "school", "work", "play", "friend", "family", "love", "smile", "laugh",
+            // Sports
+            "basketball", "football", "soccer", "tennis", "baseball", "golf",
+            "swimming", "running", "volleyball", "hockey",
+            // Foods
+            "pizza", "burger", "pasta", "salad", "sandwich", "ice cream",
+            "chocolate", "coffee", "tea", "juice",
+            // Animals
+            "elephant", "giraffe", "lion", "tiger", "monkey", "penguin",
+            "kangaroo", "dolphin", "whale", "zebra",
+            // Common phrases
+            "piece of cake", "break a leg", "under the weather",
+            "cold feet", "cup of tea", "rain or shine",
+            "time flies", "gut feeling", "day dream",
+            "wild goose chase", "hand in hand", "rule of thumb",
+            // Activities
+            "camping", "hiking", "shopping", "cooking", "painting",
+            "reading", "writing", "gaming", "fishing", "gardening",
+            // Emotions
+            "happy", "sad", "angry", "excited", "tired",
+            "confused", "surprised", "scared", "proud", "nervous",
+            // Places
+            "beach", "mountain", "park", "mall", "restaurant",
+            "library", "museum", "airport", "hospital", "hotel"
+        ];
+
+        function startGame() {
+            if (!gameActive) {
+                gameActive = true;
+                timeLeft = 90;
+                startBtn.textContent = "Stop Game";
+                nextBtn.disabled = false;
+                nextWord();
+                startTimer();
+            } else {
+                stopGame();
+            }
+        }
+
+        function stopGame() {
+            gameActive = false;
+            clearInterval(timer);
+            startBtn.textContent = "Start Game";
+            nextBtn.disabled = true;
+            wordDisplay.textContent = "Game Over!";
+            timerDisplay.textContent = "1:30";
+        }
+
+        function resetGame() {
+            stopGame();
+            team1Score.textContent = "0";
+            team2Score.textContent = "0";
+            wordDisplay.textContent = "Press Start to begin!";
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    stopGame();
+                }
+            }, 1000);
+        }
+
+        function nextWord() {
+            if (gameActive) {
+                const randomIndex = Math.floor(Math.random() * wordList.length);
+                currentWord = wordList[randomIndex];
+                wordDisplay.textContent = currentWord;
+            }
+        }
+
+        function addPoint(team) {
+            const scoreElement = team === 1 ? team1Score : team2Score;
+            scoreElement.textContent = parseInt(scoreElement.textContent) + 1;
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                nextWord();
+            } else if (e.code === 'Enter') {
+                e.preventDefault();
+                startGame();
+            } else if (e.code === 'KeyR') {
+                e.preventDefault();
+                resetGame();
+            }
+        });
+    </script>
+</body>
+</html>
