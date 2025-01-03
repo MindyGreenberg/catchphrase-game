@@ -1,276 +1,273 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Catchphrase Game</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/random-words/1.3.0/random-words.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .game-container {
-            text-align: center;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 90%;
-        }
-        .timer {
-            font-size: 48px;
-            margin: 20px 0;
-            color: #333;
-        }
-        .word-display {
-            font-size: 32px;
-            margin: 20px 0;
-            min-height: 48px;
-            color: #2c3e50;
-        }
-        button {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .start-btn {
-            background-color: #2ecc71;
-            color: white;
-        }
-        .start-btn:hover {
-            background-color: #27ae60;
-        }
-        .next-btn {
-            background-color: #3498db;
-            color: white;
-        }
-        .next-btn:hover {
-            background-color: #2980b9;
-        }
-        .reset-btn {
-            background-color: #95a5a6;
-            color: white;
-        }
-        .reset-btn:hover {
-            background-color: #7f8c8d;
-        }
-        .disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .team-scores {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-        .team-score {
-            text-align: center;
-        }
-        .score-btn {
-            background-color: #b39ddb;
-            color: white;
-            margin: 5px;
-        }
-        .score-btn:hover {
-            background-color: #9575cd;
-        }
-        .settings {
-            margin: 20px 0;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-        }
-        .team-name {
-            margin: 5px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 120px;
-        }
-        .timer-select {
-            margin: 5px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-    </style>
+  <title>Catchphrase Game</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/random-words/1.3.0/random-words.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .game-container {
+      text-align: center;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 90%;
+    }
+    .timer {
+      font-size: 48px;
+      margin: 20px 0;
+      color: #333;
+    }
+    .word-display {
+      font-size: 32px;
+      margin: 20px 0;
+      min-height: 48px;
+      color: #2c3e50;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .start-btn {
+      background-color: #2ecc71;
+      color: white;
+    }
+    .start-btn:hover {
+      background-color: #27ae60;
+    }
+    .next-btn {
+      background-color: #3498db;
+      color: white;
+    }
+    .next-btn:hover {
+      background-color: #2980b9;
+    }
+    .reset-btn {
+      background-color: #95a5a6;
+      color: white;
+    }
+    .reset-btn:hover {
+      background-color: #7f8c8d;
+    }
+    .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .team-scores {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+    .team-score {
+      text-align: center;
+    }
+    .score-btn {
+      background-color: #b39ddb;
+      color: white;
+      margin: 5px;
+    }
+    .score-btn:hover {
+      background-color: #9575cd;
+    }
+    .settings {
+      margin: 20px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+    }
+    .team-name {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 120px;
+    }
+    .timer-select {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Catchphrase</h1>
-        <div class="settings">
-            <input type="text" id="team1-name" class="team-name" placeholder="Team 1 Name" maxlength="15">
-            <input type="text" id="team2-name" class="team-name" placeholder="Team 2 Name" maxlength="15">
-            <select id="timer-select" class="timer-select">
-                <option value="60">60 Seconds</option>
-                <option value="90" selected>90 Seconds</option>
-            </select>
-        </div>
-        <div class="team-scores">
-            <div class="team-score">
-                <h2 id="team1-display">Team 1</h2>
-                <p id="team1-score">0</p>
-                <button class="score-btn" onclick="addPoint(1)">+1 Point</button>
-            </div>
-            <div class="team-score">
-                <h2 id="team2-display">Team 2</h2>
-                <p id="team2-score">0</p>
-                <button class="score-btn" onclick="addPoint(2)">+1 Point</button>
-            </div>
-        </div>
-        <div class="timer" id="timer">1:30</div>
-        <div class="word-display" id="word-display">Press Start to begin!</div>
-        <button class="start-btn" id="start-btn" onclick="startGame()">Start Game</button>
-        <button class="next-btn" id="next-btn" onclick="nextWord()" disabled>Next Word</button>
-        <button class="reset-btn" id="reset-btn" onclick="resetGame()">Reset Game</button>
+  <div class="game-container">
+    <h1>Catchphrase</h1>
+    <div class="settings">
+      <input type="text" id="team1-name" class="team-name" placeholder="Team 1 Name" maxlength="15">
+      <input type="text" id="team2-name" class="team-name" placeholder="Team 2 Name" maxlength="15">
+      <select id="timer-select" class="timer-select">
+        <option value="60">60 Seconds</option>
+        <option value="90" selected>90 Seconds</option>
+      </select>
     </div>
+    <div class="team-scores">
+      <div class="team-score">
+        <h2 id="team1-display">Team 1</h2>
+        <p id="team1-score">0</p>
+        <button class="score-btn" onclick="addPoint(1)">+1 Point</button>
+      </div>
+      <div class="team-score">
+        <h2 id="team2-display">Team 2</h2>
+        <p id="team2-score">0</p>
+        <button class="score-btn" onclick="addPoint(2)">+1 Point</button>
+      </div>
+    </div>
+    <div class="timer" id="timer">1:30</div>
+    <div class="word-display" id="word-display">Press Start to begin!</div>
+    <button class="start-btn" id="start-btn" onclick="startGame()">Start Game</button>
+    <button class="next-btn" id="next-btn" onclick="nextWord()" disabled>Next Word</button>
+    <button class="reset-btn" id="reset-btn" onclick="resetGame()">Reset Game</button>
+  </div>
 
-    <script>
-        // Initialize game state variables
-        let timer;
-        let timeLeft = 90;
-        let gameActive = false;
-        let currentWord = "";
+  <script>
+    let timer;
+    let timeLeft = 90;
+    let gameActive = false;
+    let currentWord = "";
 
-        // Get DOM elements
-        const team1Score = document.getElementById("team1-score");
-        const team2Score = document.getElementById("team2-score");
-        const team1Display = document.getElementById("team1-display");
-        const team2Display = document.getElementById("team2-display");
-        const team1Input = document.getElementById("team1-name");
-        const team2Input = document.getElementById("team2-name");
-        const timerDisplay = document.getElementById("timer");
-        const wordDisplay = document.getElementById("word-display");
-        const startBtn = document.getElementById("start-btn");
-        const nextBtn = document.getElementById("next-btn");
-        const timerSelect = document.getElementById("timer-select");
+    const team1Score = document.getElementById("team1-score");
+    const team2Score = document.getElementById("team2-score");
+    const team1Display = document.getElementById("team1-display");
+    const team2Display = document.getElementById("team2-display");
+    const team1Input = document.getElementById("team1-name");
+    const team2Input = document.getElementById("team2-name");
+    const timerDisplay = document.getElementById("timer");
+    const wordDisplay = document.getElementById("word-display");
+    const startBtn = document.getElementById("start-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const timerSelect = document.getElementById("timer-select");
 
-        // Common phrases
-        const phrases = [
-            "piece of cake", "break a leg", "under the weather",
-            "cold feet", "cup of tea", "rain or shine",
-            "time flies", "gut feeling", "day dream",
-            "wild goose chase", "hand in hand", "rule of thumb",
-            "better late than never", "bite the bullet", "break the ice",
-            "cut to the chase", "dead as a doornail", "easy does it",
-            "get your act together", "hang in there", "hit the hay",
-            "in the pink", "kick the bucket", "let the cat out of the bag",
-            "make ends meet", "once in a blue moon", "pull yourself together",
-            "put all your eggs in one basket", "rise and shine", "saved by the bell",
-            "steal the show", "take it easy", "the ball is in your court",
-            "under the weather", "whole nine yards", "your guess is as good as mine"
-        ];
+    const preloadedWords = [];
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
+    function preloadWords() { 
+      try {
+        // Preload random words from the random-words library
+        preloadedWords.push(...randomWords({ exactly: 240, maxLength: 8 })); 
+      } catch (error) {
+        console.error("Error preloading words:", error);
+      }
+    }
 
-        function updateTeamNames() {
-            team1Display.textContent = team1Input.value || "Team 1";
-            team2Display.textContent = team2Input.value || "Team 2";
-        }
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
 
-        function startGame() {
-            if (!gameActive) {
-                gameActive = true;
-                timeLeft = parseInt(timerSelect.value);
-                updateTimerDisplay();
-                startBtn.textContent = "Stop Game";
-                nextBtn.disabled = false;
-                updateTeamNames();
-                nextWord();
-                startTimer();
-            } else {
-                stopGame();
-            }
-        }
+    function updateTeamNames() {
+      team1Display.textContent = team1Input.value || "Team 1";
+      team2Display.textContent = team2Input.value || "Team 2";
+    }
 
-        function stopGame() {
-            gameActive = false;
-            clearInterval(timer);
-            startBtn.textContent = "Start Game";
-            nextBtn.disabled = true;
-            wordDisplay.textContent = "Game Over!";
-            updateTimerDisplay();
-        }
-
-        function resetGame() {
-            stopGame();
-            team1Score.textContent = "0";
-            team2Score.textContent = "0";
-            wordDisplay.textContent = "Press Start to begin!";
-            timeLeft = parseInt(timerSelect.value);
-            updateTimerDisplay();
-        }
-
-        function startTimer() {
-            clearInterval(timer);
-            timer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                
-                if (timeLeft <= 0) {
-                    stopGame();
-                }
-            }, 1000);
-        }
-
-        function nextWord() {
-            if (gameActive) {
-                // 20% chance of getting a phrase, 80% chance of getting a random word
-                if (Math.random() < 0.2) {
-                    const randomIndex = Math.floor(Math.random() * phrases.length);
-                    currentWord = phrases[randomIndex];
-                } else {
-                    currentWord = randomWords({ exactly: 1, maxLength: 8 })[0];
-                }
-                wordDisplay.textContent = currentWord;
-            }
-        }
-
-        function addPoint(team) {
-            const scoreElement = team === 1 ? team1Score : team2Score;
-            scoreElement.textContent = parseInt(scoreElement.textContent) + 1;
-        }
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                nextWord();
-            } else if (e.code === 'Enter') {
-                e.preventDefault();
-                startGame();
-            } else if (e.code === 'KeyR') {
-                e.preventDefault();
-                resetGame();
-            }
-        });
-
-        // Initialize timer display
+    function startGame() {
+      if (!gameActive) {
+        gameActive = true;
+        timeLeft = parseInt(timerSelect.value);
         updateTimerDisplay();
+        startBtn.textContent = "Stop Game";
+        nextBtn.disabled = false;
+        updateTeamNames();
+        nextWord(); 
+        startTimer();
+        preloadWords(); // Start preloading words
+      } else {
+        stopGame();
+      }
+    }
 
-        // Update team names when input changes
-        team1Input.addEventListener('input', updateTeamNames);
-        team2Input.addEventListener('input', updateTeamNames);
+    function stopGame() {
+      gameActive = false;
+      clearInterval(timer);
+      startBtn.textContent = "Start Game";
+      nextBtn.disabled = true;
+      wordDisplay.textContent = "Game Over!";
+      updateTimerDisplay();
+    }
 
-        // Update timer when selection changes
-        timerSelect.addEventListener('change', () => {
-            timeLeft = parseInt(timerSelect.value);
-            updateTimerDisplay();
-        });
-    </script>
+    function resetGame() {
+      stopGame();
+      team1Score.textContent = "0";
+      team2Score.textContent = "0";
+      wordDisplay.textContent = "Press Start to begin!";
+      timeLeft = parseInt(timerSelect.value);
+      updateTimerDisplay();
+      preloadedWords.length = 0; // Clear preloaded words
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          stopGame();
+        }
+      }, 1000);
+    }
+
+    function nextWord() {
+      if (gameActive) {
+        wordDisplay.textContent = "Loading..."; 
+
+        try {
+          if (preloadedWords.length > 0) {
+            const randomIndex = Math.floor(Math.random() * preloadedWords.length);
+            currentWord = preloadedWords.splice(randomIndex, 1)[0];
+          } else {
+            currentWord = randomWords({ exactly: 1, maxLength: 8 })[0];
+          }
+          wordDisplay.textContent = currentWord;
+        } catch (error) {
+          console.error("Error getting word:", error);
+          wordDisplay.textContent = "Error loading word";
+        }
+      }
+    }
+
+    function addPoint(team) {
+      const scoreElement = team === 1 ? team1Score : team2Score;
+      scoreElement.textContent = parseInt(scoreElement.textContent) + 1;
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        nextWord();
+      } else if (e.code === 'Enter') {
+        e.preventDefault();
+        startGame();
+      } else if (e.code === 'KeyR') {
+        e.preventDefault();
+        resetGame();
+      }
+    });
+
+    updateTimerDisplay();
+
+    team1Input.addEventListener('input', updateTeamNames);
+    team2Input.addEventListener('input', updateTeamNames);
+
+    timerSelect.addEventListener('change', () => {
+      timeLeft = parseInt(timerSelect.value);
+      updateTimerDisplay();
+    });
+  </script>
 </body>
 </html>
