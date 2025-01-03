@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Catchphrase Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/random-words/1.3.0/random-words.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,26 +77,53 @@
             text-align: center;
         }
         .score-btn {
-            background-color: #9b59b6;
+            background-color: #b39ddb;
             color: white;
             margin: 5px;
         }
         .score-btn:hover {
-            background-color: #8e44ad;
+            background-color: #9575cd;
+        }
+        .settings {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .team-name {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 120px;
+        }
+        .timer-select {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>Catchphrase</h1>
+        <div class="settings">
+            <input type="text" id="team1-name" class="team-name" placeholder="Team 1 Name" maxlength="15">
+            <input type="text" id="team2-name" class="team-name" placeholder="Team 2 Name" maxlength="15">
+            <select id="timer-select" class="timer-select">
+                <option value="60">60 Seconds</option>
+                <option value="90" selected>90 Seconds</option>
+            </select>
+        </div>
         <div class="team-scores">
             <div class="team-score">
-                <h2>Team 1</h2>
+                <h2 id="team1-display">Team 1</h2>
                 <p id="team1-score">0</p>
                 <button class="score-btn" onclick="addPoint(1)">+1 Point</button>
             </div>
             <div class="team-score">
-                <h2>Team 2</h2>
+                <h2 id="team2-display">Team 2</h2>
                 <p id="team2-score">0</p>
                 <button class="score-btn" onclick="addPoint(2)">+1 Point</button>
             </div>
@@ -108,7 +136,7 @@
     </div>
 
     <script>
-        // Initialize game state variables first
+        // Initialize game state variables
         let timer;
         let timeLeft = 90;
         let gameActive = false;
@@ -117,50 +145,51 @@
         // Get DOM elements
         const team1Score = document.getElementById("team1-score");
         const team2Score = document.getElementById("team2-score");
+        const team1Display = document.getElementById("team1-display");
+        const team2Display = document.getElementById("team2-display");
+        const team1Input = document.getElementById("team1-name");
+        const team2Input = document.getElementById("team2-name");
         const timerDisplay = document.getElementById("timer");
         const wordDisplay = document.getElementById("word-display");
         const startBtn = document.getElementById("start-btn");
         const nextBtn = document.getElementById("next-btn");
+        const timerSelect = document.getElementById("timer-select");
 
-        // Combined word and phrase list
-        const wordList = [
-            // Common words
-            "dog", "cat", "house", "car", "tree", "book", "phone", "computer",
-            "chair", "table", "door", "window", "sun", "moon", "star", "cloud",
-            "rain", "snow", "flower", "grass", "bird", "fish", "movie", "music",
-            "dance", "sing", "jump", "run", "walk", "sleep", "eat", "drink",
-            "school", "work", "play", "friend", "family", "love", "smile", "laugh",
-            // Sports
-            "basketball", "football", "soccer", "tennis", "baseball", "golf",
-            "swimming", "running", "volleyball", "hockey",
-            // Foods
-            "pizza", "burger", "pasta", "salad", "sandwich", "ice cream",
-            "chocolate", "coffee", "tea", "juice",
-            // Animals
-            "elephant", "giraffe", "lion", "tiger", "monkey", "penguin",
-            "kangaroo", "dolphin", "whale", "zebra",
-            // Common phrases
+        // Common phrases
+        const phrases = [
             "piece of cake", "break a leg", "under the weather",
             "cold feet", "cup of tea", "rain or shine",
             "time flies", "gut feeling", "day dream",
             "wild goose chase", "hand in hand", "rule of thumb",
-            // Activities
-            "camping", "hiking", "shopping", "cooking", "painting",
-            "reading", "writing", "gaming", "fishing", "gardening",
-            // Emotions
-            "happy", "sad", "angry", "excited", "tired",
-            "confused", "surprised", "scared", "proud", "nervous",
-            // Places
-            "beach", "mountain", "park", "mall", "restaurant",
-            "library", "museum", "airport", "hospital", "hotel"
+            "better late than never", "bite the bullet", "break the ice",
+            "cut to the chase", "dead as a doornail", "easy does it",
+            "get your act together", "hang in there", "hit the hay",
+            "in the pink", "kick the bucket", "let the cat out of the bag",
+            "make ends meet", "once in a blue moon", "pull yourself together",
+            "put all your eggs in one basket", "rise and shine", "saved by the bell",
+            "steal the show", "take it easy", "the ball is in your court",
+            "under the weather", "whole nine yards", "your guess is as good as mine"
         ];
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTeamNames() {
+            team1Display.textContent = team1Input.value || "Team 1";
+            team2Display.textContent = team2Input.value || "Team 2";
+        }
 
         function startGame() {
             if (!gameActive) {
                 gameActive = true;
-                timeLeft = 90;
+                timeLeft = parseInt(timerSelect.value);
+                updateTimerDisplay();
                 startBtn.textContent = "Stop Game";
                 nextBtn.disabled = false;
+                updateTeamNames();
                 nextWord();
                 startTimer();
             } else {
@@ -174,7 +203,7 @@
             startBtn.textContent = "Start Game";
             nextBtn.disabled = true;
             wordDisplay.textContent = "Game Over!";
-            timerDisplay.textContent = "1:30";
+            updateTimerDisplay();
         }
 
         function resetGame() {
@@ -182,15 +211,15 @@
             team1Score.textContent = "0";
             team2Score.textContent = "0";
             wordDisplay.textContent = "Press Start to begin!";
+            timeLeft = parseInt(timerSelect.value);
+            updateTimerDisplay();
         }
 
         function startTimer() {
             clearInterval(timer);
             timer = setInterval(() => {
                 timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                updateTimerDisplay();
                 
                 if (timeLeft <= 0) {
                     stopGame();
@@ -200,8 +229,13 @@
 
         function nextWord() {
             if (gameActive) {
-                const randomIndex = Math.floor(Math.random() * wordList.length);
-                currentWord = wordList[randomIndex];
+                // 20% chance of getting a phrase, 80% chance of getting a random word
+                if (Math.random() < 0.2) {
+                    const randomIndex = Math.floor(Math.random() * phrases.length);
+                    currentWord = phrases[randomIndex];
+                } else {
+                    currentWord = randomWords({ exactly: 1, maxLength: 8 })[0];
+                }
                 wordDisplay.textContent = currentWord;
             }
         }
@@ -223,6 +257,19 @@
                 e.preventDefault();
                 resetGame();
             }
+        });
+
+        // Initialize timer display
+        updateTimerDisplay();
+
+        // Update team names when input changes
+        team1Input.addEventListener('input', updateTeamNames);
+        team2Input.addEventListener('input', updateTeamNames);
+
+        // Update timer when selection changes
+        timerSelect.addEventListener('change', () => {
+            timeLeft = parseInt(timerSelect.value);
+            updateTimerDisplay();
         });
     </script>
 </body>
